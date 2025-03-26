@@ -45,6 +45,11 @@ def gray_scale_image(image):
     else:
         return image
 
+def black_white_image(image, threshold):
+    avg_intensity = np.mean(image, axis=-1)
+    output = np.where(avg_intensity >= threshold, 255, 0).astype(np.uint8)
+    return output
+
 def resize_image(image, target_width, target_height):
     height, width = image.shape[:2]
     x_min, x_max = 0, width - 1
@@ -98,7 +103,6 @@ def mirror_image(image, mode='vertical'):
             output = np.zeros((height, width, channels), dtype=image.dtype)
             for i in range(height):
                 for j in range(width):
-                    print(j)
                     output[i, j] = image[i, width-j-1]
             return output
 
