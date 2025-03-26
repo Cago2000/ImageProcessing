@@ -58,6 +58,30 @@ def resize_image(image, target_width, target_height):
     return reduced_image
 
 
+def rotate_image(image, direction=1):
+    height, width, channels = image.shape
+    if direction == 1:
+        output = np.zeros((width, height, channels), dtype=image.dtype)
+        for i in range(height):
+            for j in range(width):
+                output[j, height - 1 - i] = image[i, j]
+        return output
+
+    if direction == -1:
+        output = np.zeros((width, height, channels), dtype=image.dtype)
+        for i in range(height):
+            for j in range(width):
+                output[width - 1 - j, i] = image[i, j]
+        return output
+
+    if direction in {2, -2}:
+        output = np.zeros((height, width, channels), dtype=image.dtype)
+        for i in range(height):
+            for j in range(width):
+                output[height - 1 - i, width - 1 - j] = image[i, j]
+        return output
+    return image
+
 def blur_filter(image, kernel_dim, kernel_intensity):
     kernel = np.ones((kernel_dim, kernel_dim, 3)) / kernel_intensity
     pad_size = kernel.shape[0] // 2
