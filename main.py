@@ -1,5 +1,5 @@
 import image_operations as img_ops
-from image_operations import show_image
+from image_operations import show_image, black_white_image
 
 
 def main():
@@ -12,6 +12,10 @@ def main():
     img_ops.save_image(image=resized_img, save_path="images/resized.jpeg")
 
     img = resized_img
+
+    bw_image = black_white_image(img, threshold=128)
+    img_ops.show_image(image=bw_image, title='black white image')
+    img_ops.save_image(image=bw_image, save_path="images/black_white.jpeg")
 
     mirrored_vertically_img = img_ops.mirror_image(image=img, mode='vertical')
     img_ops.show_image(image=mirrored_vertically_img, title='mirrored vertically')
