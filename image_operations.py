@@ -59,7 +59,12 @@ def resize_image(image, target_width, target_height):
 
 
 def rotate_image(image, direction=1):
-    height, width, channels = image.shape
+    if len(image.shape) == 3:
+        height, width, channels = image.shape
+    else:
+        height, width = image.shape
+        channels = 1
+
     if direction == 1:
         output = np.zeros((width, height, channels), dtype=image.dtype)
         for i in range(height):
@@ -80,6 +85,29 @@ def rotate_image(image, direction=1):
             for j in range(width):
                 output[height - 1 - i, width - 1 - j] = image[i, j]
         return output
+    return image
+
+def mirror_image(image, mode='vertical'):
+    if len(image.shape) == 3:
+        height, width, channels = image.shape
+    else:
+        height, width = image.shape
+        channels = 1
+    match mode:
+        case 'vertical':
+            output = np.zeros((height, width, channels), dtype=image.dtype)
+            for i in range(height):
+                for j in range(width):
+                    print(j)
+                    output[i, j] = image[i, width-j-1]
+            return output
+
+        case 'horizontal':
+            output = np.zeros((height, width, channels), dtype=image.dtype)
+            for i in range(height):
+                for j in range(width):
+                    output[i, j] = image[height-i-1, j]
+            return output
     return image
 
 def blur_filter(image, kernel_dim, kernel_intensity):
