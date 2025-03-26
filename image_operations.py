@@ -9,7 +9,7 @@ def load_image(image_path):
             print("Error: Unable to load image.")
             return None
         print(f"Image loaded from {image_path}")
-        return img
+        return np.uint8(img)
     else:
         print("Error: File not found.")
         return None
@@ -28,10 +28,10 @@ def delete_image(image_path):
     else:
         print("Error: File not found.")
 
-def show_image(image):
+def show_image(image, title='Image'):
     if image is not None:
         print(f"Image displayed")
-        cv2.imshow("Image", image)
+        cv2.imshow(title, image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
     else:
@@ -56,3 +56,44 @@ def resize_image(image, target_width, target_height):
             y = y_min + (n / (target_height - 1)) * (y_max - y_min)
             reduced_image[n, m] = image[int(y), int(x)]
     return reduced_image
+
+
+def blur_filter(image, kernel_dim, kernel_intensity):
+    kernel = np.ones((kernel_dim, kernel_dim, 3)) / kernel_intensity
+    pad_size = kernel.shape[0] // 2
+    image = np.pad(
+        image,
+        ((pad_size, pad_size), (pad_size, pad_size), (0, 0)),
+        mode='constant'
+    )
+    height, width, channels = image.shape
+    k_height, k_width, k_channels = kernel.shape
+    out_height = height - k_height + 1
+    out_width = width - k_width + 1
+    output = np.zeros((out_height, out_width, channels), dtype=np.uint8)
+    for z in range(channels):
+        normalized_kernel = kernel[:, :, z] / np.sum(kernel[:, :, z])
+        for y in range(out_height):
+            for x in range(out_width):
+                window = image[y:y + k_height, x:x + k_width, z]
+                output[y, x, z] = np.sum(window * normalized_kernel)
+    return output
+
+
+def sobel_filter(image, mode, intensity=1):
+    match mode:
+        case 'vertical': sobel = np.array([[-1, 0, 1],[-2, 0, 2],[-1, 0, 1]])
+        case 'horizontal': sobel = np.array([[-1, -2, -1],[0, 0,0],[1, 2, 1]])
+        case _: return image
+    sobel *= intensity
+    padded_image = np.pad(image,((1, 1), (1, 1)),mode='constant')
+    height, width = padded_image.shape
+    k_height, k_width = sobel.shape
+    out_height = height - k_height + 1
+    out_width = width - k_width + 1
+    output = np.zeros((out_height, out_width), dtype=np.uint8)
+    for y in range(out_height):
+        for x in range(out_width):
+            window = padded_image[y:y + k_height, x:x + k_width]
+            output[y, x] = np.abs(np.sum(window * sobel))
+    return output
