@@ -1,4 +1,5 @@
 import image_operations as img_ops
+from image_operations import show_image
 
 
 def main():
@@ -11,6 +12,14 @@ def main():
     img_ops.save_image(image=resized_img, save_path="images/resized.jpeg")
 
     img = resized_img
+
+    mirrored_vertically_img = img_ops.mirror_image(image=img, mode='vertical')
+    img_ops.show_image(image=mirrored_vertically_img, title='mirrored vertically')
+    img_ops.save_image(image=mirrored_vertically_img, save_path="images/mirrored_vertically.jpeg")
+
+    mirrored__horizontally_img = img_ops.mirror_image(image=img, mode='horizontal')
+    img_ops.show_image(image=mirrored__horizontally_img, title='mirrored horizontally')
+    img_ops.save_image(mirrored__horizontally_img, save_path="images/mirrored_horizontally.jpeg")
 
     rotated_img = img_ops.rotate_image(image=img, direction=1)
     img_ops.show_image(image=rotated_img, title="rotated image 90 degree clockwise")
