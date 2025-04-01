@@ -138,8 +138,14 @@ def blur_filter(image, kernel_dim, kernel_intensity):
 
 def sobel_filter(image, mode, intensity=1):
     match mode:
-        case 'vertical': sobel = np.array([[-1, 0, 1],[-2, 0, 2],[-1, 0, 1]])
-        case 'horizontal': sobel = np.array([[-1, -2, -1],[0, 0,0],[1, 2, 1]])
+        case 'vertical': sobel = np.array([
+            [-1, 0, 1],
+            [-2, 0, 2],
+            [-1, 0, 1]])
+        case 'horizontal': sobel = np.array([
+            [-1, -2, -1],
+            [ 0,  0,  0],
+            [ 1,  2,  1]])
         case _: return image
     sobel *= intensity
     padded_image = np.pad(image,((1, 1), (1, 1)),mode='constant')
