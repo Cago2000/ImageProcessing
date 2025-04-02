@@ -33,9 +33,10 @@ def main():
     basic_ops.show_image(image=mirrored__horizontally_img, title='mirrored horizontally')
     basic_ops.save_image(mirrored__horizontally_img, save_path="images/mirrored_horizontally.ppm")
 
-    rotated_img = geo_ops.rotate_image(image=img, direction=1)
-    basic_ops.show_image(image=rotated_img, title="rotated image 90 degree clockwise")
-    basic_ops.save_image(image=rotated_img, save_path="images/rotated_image.ppm")
+    degree = 50
+    rotated_img = geo_ops.rotate_image(image=img, degree=degree)
+    basic_ops.show_image(image=rotated_img, title=f"rotated image {degree} degree clockwise")
+    basic_ops.save_image(image=rotated_img, save_path=f"images/{degree}_degree_rotated_image.ppm")
 
     blur_kernel_dim = 15
     blur_kernel_intensity = 40
