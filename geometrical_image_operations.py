@@ -1,6 +1,6 @@
 import numpy as np
 
-def resize_image(image, target_width, target_height):
+def resize_image(image: np.ndarray, target_width: int, target_height: int) -> np.ndarray:
     height, width = image.shape[:2]
     x_min, x_max = 0, width - 1
     y_min, y_max = 0, height - 1
@@ -12,8 +12,7 @@ def resize_image(image, target_width, target_height):
             reduced_image[n, m] = image[int(y), int(x)]
     return reduced_image
 
-
-def rotate_image(image, direction=1):
+def rotate_image(image: np.ndarray, direction: int = 1) -> np.ndarray:
     if len(image.shape) == 3:
         height, width, channels = image.shape
     else:
@@ -42,7 +41,7 @@ def rotate_image(image, direction=1):
         return output
     return image
 
-def mirror_image(image, mode='vertical'):
+def mirror_image(image: np.ndarray, mode: str = 'vertical') -> np.ndarray:
     if len(image.shape) == 3:
         height, width, channels = image.shape
     else:

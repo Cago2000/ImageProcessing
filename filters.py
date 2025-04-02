@@ -1,6 +1,6 @@
 import numpy as np
 
-def gray_scale_filter(image):
+def gray_scale_filter(image: np.ndarray) -> np.ndarray:
     if image is not None:
         image = np.array(
             [list(map(lambda bgr: int(0.299 * bgr[2] + 0.587 * bgr[1] + 0.114 * bgr[0]), row)) for row in image])
@@ -8,12 +8,12 @@ def gray_scale_filter(image):
     else:
         return image
 
-def black_white_filter(image, threshold):
+def black_white_filter(image: np.ndarray, threshold: int) -> np.ndarray:
     avg_intensity = np.mean(image, axis=-1)
     output = np.where(avg_intensity >= threshold, 255, 0).astype(np.uint8)
     return output
 
-def blur_filter(image, kernel_dim, kernel_intensity):
+def blur_filter(image: np.ndarray, kernel_dim: int, kernel_intensity: int) -> np.ndarray:
     kernel = np.ones((kernel_dim, kernel_dim, 3)) / kernel_intensity
     pad_size = kernel.shape[0] // 2
     image = np.pad(
@@ -34,8 +34,7 @@ def blur_filter(image, kernel_dim, kernel_intensity):
                 output[y, x, z] = np.sum(window * normalized_kernel)
     return output
 
-
-def sobel_filter(image, mode, intensity=1):
+def sobel_filter(image: np.ndarray, mode: str, intensity: int = 1) -> np.ndarray:
     match mode:
         case 'vertical': sobel = np.array([
             [-1, 0, 1],
