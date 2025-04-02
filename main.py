@@ -5,8 +5,11 @@ import filters
 
 def main():
 
-    img = basic_ops.create_image(800, 600, 1, 128)
+    img = basic_ops.create_image(width=800, height=600, channels=1, gray_value=128)
     basic_ops.show_image(img, 'created pixelmap')
+
+    img = basic_ops.create_image_with_gradient(width=800, height=800, channels=3, brightness=100)
+    basic_ops.show_image(image=img, title='created pixelmap with gradient')
 
     img_path = "images/aquarium.jpeg"
     img = basic_ops.load_image(image_path=img_path)
@@ -20,7 +23,7 @@ def main():
 
     bw_image = filters.black_white_filter(img, threshold=128)
     basic_ops.show_image(image=bw_image, title='black white image')
-    basic_ops.save_image(image=bw_image, save_path="images/black_white.ppm")
+    basic_ops.save_image(image=bw_image, save_path="images/black_white.pgm")
 
     mirrored_vertically_img = geo_ops.mirror_image(image=img, mode='vertical')
     basic_ops.show_image(image=mirrored_vertically_img, title='mirrored vertically')
@@ -28,7 +31,7 @@ def main():
 
     mirrored__horizontally_img = geo_ops.mirror_image(image=img, mode='horizontal')
     basic_ops.show_image(image=mirrored__horizontally_img, title='mirrored horizontally')
-    basic_ops.save_image(mirrored__horizontally_img, save_path="images/mirrored_horizontally.ppmg")
+    basic_ops.save_image(mirrored__horizontally_img, save_path="images/mirrored_horizontally.ppm")
 
     rotated_img = geo_ops.rotate_image(image=img, direction=1)
     basic_ops.show_image(image=rotated_img, title="rotated image 90 degree clockwise")
@@ -42,11 +45,11 @@ def main():
 
     gray_scaled_img = filters.gray_scale_filter(image=img)
     basic_ops.show_image(image=gray_scaled_img, title='gray scaled image')
-    basic_ops.save_image(image=gray_scaled_img, save_path="images/gray_scaled.ppm")
+    basic_ops.save_image(image=gray_scaled_img, save_path="images/gray_scaled.pgm")
 
     square_img = basic_ops.load_image(image_path='images/square.jpeg')
     h, w = square_img.shape[:2]
-    square_img = geo_ops.resize_image(square_img, target_width=int(w/3), target_height=int(h/3))
+    square_img = geo_ops.resize_image(image=square_img, target_width=int(w/3), target_height=int(h/3))
     square_img = filters.gray_scale_filter(image=square_img)
     sobel_vertical_image = filters.sobel_filter(image=square_img, mode='vertical', intensity=1)
     sobel_horizontal_image = filters.sobel_filter(image=square_img, mode='horizontal', intensity=1)
