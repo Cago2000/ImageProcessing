@@ -45,9 +45,9 @@ def delete_image(image_path: str) -> None:
 
 def show_image(image: np.ndarray, title: str = 'Image') -> None:
     if image is not None:
-        print(f"Image displayed")
         cv2.imshow(title, image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
+        print(f"Image displayed")
     else:
         print("Error: File not found.")
