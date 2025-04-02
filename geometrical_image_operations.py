@@ -1,3 +1,5 @@
+import math
+import basic_image_operations as basic_ops
 import numpy as np
 
 def resize_image(image: np.ndarray, target_width: int, target_height: int) -> np.ndarray:
@@ -12,34 +14,49 @@ def resize_image(image: np.ndarray, target_width: int, target_height: int) -> np
             reduced_image[n, m] = image[int(y), int(x)]
     return reduced_image
 
-def rotate_image(image: np.ndarray, direction: int = 1) -> np.ndarray:
+def rotate_image(image: np.ndarray, degree: int = 90) -> np.ndarray:
+    degree = degree * 180 / math.pi
+
     if len(image.shape) == 3:
         height, width, channels = image.shape
     else:
         height, width = image.shape
         channels = 1
 
-    if direction == 1:
-        output = np.zeros((width, height, channels), dtype=image.dtype)
-        for i in range(height):
-            for j in range(width):
-                output[j, height - 1 - i] = image[i, j]
-        return output
+    output = np.zeros((height, width, channels), dtype=image.dtype)
 
-    if direction == -1:
-        output = np.zeros((width, height, channels), dtype=image.dtype)
-        for i in range(height):
-            for j in range(width):
-                output[width - 1 - j, i] = image[i, j]
-        return output
+    cx, cy = width // 2, height // 2
 
-    if direction in {2, -2}:
-        output = np.zeros((height, width, channels), dtype=image.dtype)
-        for i in range(height):
-            for j in range(width):
-                output[height - 1 - i, width - 1 - j] = image[i, j]
-        return output
-    return image
+    for y in range(height):
+        for x in range(width):
+            x_shifted, y_shifted = x - cx, y - cy
+            new_x = int(math.cos(degree) * x_shifted - math.sin(degree) * y_shifted + cx)
+            new_y = int(math.sin(degree) * x_shifted + math.cos(degree) * y_shifted + cy)
+            if 0 <= new_x < width and 0 <= new_y < height:
+                output[new_y, new_x] = image[y, x]
+
+    for y in range(height):
+        for x in range(width):
+            pixel_sum = [0, 0, 0]
+            pixel_count = 0
+            if np.sum(output[y, x].astype(np.int32)) != 0:
+                continue
+            for a in [-1, 0, 1]:
+                for b in [-1, 0, 1]:
+                    if a == 0 and b == 0:
+                        continue
+                    if x + a < 0 or y + b < 0 or x + a >= width or y + b >= height:
+                        continue
+                    if np.sum(output[y + b, x + a].astype(np.int32)) == 0:
+                        continue
+                    pixel_sum += output[y + b, x + a]
+                    pixel_count += 1
+            for i, color in enumerate(pixel_sum):
+                if pixel_count > 0:
+                    pixel_sum[i] = int(color / pixel_count)
+            output[y, x] = pixel_sum
+    return output
+
 
 def mirror_image(image: np.ndarray, mode: str = 'vertical') -> np.ndarray:
     if len(image.shape) == 3:
