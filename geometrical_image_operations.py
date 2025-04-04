@@ -14,8 +14,6 @@ def resize_image(image: np.ndarray, target_width: int, target_height: int) -> np
             reduced_image[n, m] = image[int(y), int(x)]
     return reduced_image
 
-import numpy as np
-import math
 
 def rotate_image(image: np.ndarray, degree: int = 90) -> np.ndarray:
     if degree == 360:
@@ -42,11 +40,8 @@ def rotate_image(image: np.ndarray, degree: int = 90) -> np.ndarray:
 
     for y in range(height):
         for x in range(width):
-            if np.sum(output[y, x].astype(np.int32)) != 0:
+            if np.sum(output[y, x].astype(np.int16)) != 0:
                 continue
-
-            pixel_sum = np.zeros(3, dtype=np.int32)
-            pixel_count = 0
 
             x_shifted, y_shifted = x - cx, y - cy
             original_x = int(math.cos(-degree) * x_shifted - math.sin(-degree) * y_shifted + cx)
@@ -55,21 +50,22 @@ def rotate_image(image: np.ndarray, degree: int = 90) -> np.ndarray:
             if not (0 <= original_x < width and 0 <= original_y < height):
                 continue
 
+            pixels = []
+
             for a in [-1, 0, 1]:
                 for b in [-1, 0, 1]:
                     if a == 0 and b == 0:
                         continue
                     if x + a < 0 or y + b < 0 or x + a >= width or y + b >= height:
                         continue
-                    if np.sum(output[y + b, x + a].astype(np.int32)) == 0:
+                    if np.sum(output[y + b, x + a].astype(np.int16)) == 0:
                         continue
-                    nx, ny = x + a, y + b
-                    if 0 <= nx < width and 0 <= ny < height and np.sum(output[ny, nx].astype(np.int32)) > 0:
-                        pixel_sum += output[ny, nx]
-                        pixel_count += 1
+                    if 0 <= x + a < width and 0 <= y + b < height:
+                        pixels.append(output[y + b, x + a].astype(np.int16))
 
-            if pixel_count > 0:
-                output[y, x] = (pixel_sum / pixel_count).astype(np.uint8)  # Compute average color
+            if len(pixels) > 0:
+                pixel_sum = np.uint8(sum(pixels)/len(pixels))
+                output[y, x] = pixel_sum
     return output
 
 
