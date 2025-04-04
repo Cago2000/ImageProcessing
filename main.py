@@ -8,7 +8,7 @@ def main():
     img = basic_ops.create_image(width=800, height=600, channels=1, gray_value=128)
     basic_ops.show_image(img, 'created pixelmap')
 
-    img = basic_ops.create_image_with_gradient(width=800, height=800, channels=3, brightness=100)
+    img = basic_ops.create_image_with_gradient(width=800, height=800, brightness=100)
     basic_ops.show_image(image=img, title='created pixelmap with gradient')
 
     img_path = "images/aquarium.jpeg"
