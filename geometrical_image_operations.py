@@ -1,5 +1,4 @@
 import math
-import basic_image_operations as basic_ops
 import numpy as np
 
 def resize_image(image: np.ndarray, target_width: int, target_height: int) -> np.ndarray:
@@ -48,22 +47,27 @@ def rotate_image(image: np.ndarray, degree: int = 90) -> np.ndarray:
 
     for y in range(new_height):
         for x in range(new_width):
-            if np.sum(output[y, x].astype(np.int16)) != 0:
+            pixel_is_not_black = np.sum(output[y, x].astype(np.int16)) != 0
+            if pixel_is_not_black:
                 continue
 
             x_shifted, y_shifted = x - new_cx, y - new_cy
             original_x = int(math.cos(-rad) * x_shifted - math.sin(-rad) * y_shifted + original_cx)
             original_y = int(math.sin(-rad) * x_shifted + math.cos(-rad) * y_shifted + original_cy)
 
-            if not (0 <= original_x < width and 0 <= original_y < height):
+            pixel_not_in_original_image = original_x < 0 or original_y < 0 or original_x >= width or original_y >= height
+            if pixel_not_in_original_image:
                 continue
 
             pixels = []
             for a, b in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
-                nx, ny = x + a, y + b
-                if 0 <= nx < new_width and 0 <= ny < new_height:
-                    if np.sum(output[ny, nx].astype(np.int16)) != 0:
-                        pixels.append(output[ny, nx].astype(np.int16))
+                out_of_bounds = not (0 <= x + a < new_width and 0 <= y + b < new_height)
+                if out_of_bounds:
+                    continue
+                pixel_is_black = np.sum(output[y + b, x + a].astype(np.int16)) == 0
+                if pixel_is_black:
+                    continue
+                pixels.append(output[y + b, x + a].astype(np.int16))
 
             if pixels:
                 output[y, x] = np.uint8(sum(pixels) / len(pixels))
