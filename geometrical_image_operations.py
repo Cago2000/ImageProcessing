@@ -19,7 +19,7 @@ def rotate_image(image: np.ndarray, degree: int = 90) -> np.ndarray:
     if degree == 360:
         return image
 
-    degree = math.radians(degree)
+    rad = math.radians(degree)
 
     if len(image.shape) == 3:
         height, width, channels = image.shape
@@ -27,45 +27,47 @@ def rotate_image(image: np.ndarray, degree: int = 90) -> np.ndarray:
         height, width = image.shape
         channels = 1
 
-    output = np.zeros((height, width, channels), dtype=image.dtype)
-    cx, cy = width // 2, height // 2
+    cos_theta = abs(math.cos(rad))
+    sin_theta = abs(math.sin(rad))
+    new_width = int(width * cos_theta + height * sin_theta)
+    new_height = int(width * sin_theta + height * cos_theta)
+
+    output = np.zeros((new_height, new_width, channels), dtype=image.dtype)
+
+    original_cx, original_cy = width / 2, height / 2
+    new_cx, new_cy = new_width / 2, new_height / 2
 
     for y in range(height):
         for x in range(width):
-            x_shifted, y_shifted = x - cx, y - cy
-            new_x = int(math.cos(degree) * x_shifted - math.sin(degree) * y_shifted + cx)
-            new_y = int(math.sin(degree) * x_shifted + math.cos(degree) * y_shifted + cy)
-            if 0 <= new_x < width and 0 <= new_y < height:
+            x_shifted, y_shifted = x - original_cx, y - original_cy
+            new_x = int(math.cos(rad) * x_shifted - math.sin(rad) * y_shifted + new_cx)
+            new_y = int(math.sin(rad) * x_shifted + math.cos(rad) * y_shifted + new_cy)
+
+            if 0 <= new_x < new_width and 0 <= new_y < new_height:
                 output[new_y, new_x] = image[y, x]
 
-    for y in range(height):
-        for x in range(width):
+    for y in range(new_height):
+        for x in range(new_width):
             if np.sum(output[y, x].astype(np.int16)) != 0:
                 continue
 
-            x_shifted, y_shifted = x - cx, y - cy
-            original_x = int(math.cos(-degree) * x_shifted - math.sin(-degree) * y_shifted + cx)
-            original_y = int(math.sin(-degree) * x_shifted + math.cos(-degree) * y_shifted + cy)
+            x_shifted, y_shifted = x - new_cx, y - new_cy
+            original_x = int(math.cos(-rad) * x_shifted - math.sin(-rad) * y_shifted + original_cx)
+            original_y = int(math.sin(-rad) * x_shifted + math.cos(-rad) * y_shifted + original_cy)
 
             if not (0 <= original_x < width and 0 <= original_y < height):
                 continue
 
             pixels = []
+            for a, b in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
+                nx, ny = x + a, y + b
+                if 0 <= nx < new_width and 0 <= ny < new_height:
+                    if np.sum(output[ny, nx].astype(np.int16)) != 0:
+                        pixels.append(output[ny, nx].astype(np.int16))
 
-            for a in [-1, 0, 1]:
-                for b in [-1, 0, 1]:
-                    if a == 0 and b == 0:
-                        continue
-                    if x + a < 0 or y + b < 0 or x + a >= width or y + b >= height:
-                        continue
-                    if np.sum(output[y + b, x + a].astype(np.int16)) == 0:
-                        continue
-                    if 0 <= x + a < width and 0 <= y + b < height:
-                        pixels.append(output[y + b, x + a].astype(np.int16))
+            if pixels:
+                output[y, x] = np.uint8(sum(pixels) / len(pixels))
 
-            if len(pixels) > 0:
-                pixel_sum = np.uint8(sum(pixels)/len(pixels))
-                output[y, x] = pixel_sum
     return output
 
 
