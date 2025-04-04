@@ -7,8 +7,8 @@ def create_image(width: int, height: int, channels: int, gray_value: int) -> np.
     image[:] = gray_value
     return image
 
-def create_image_with_gradient(width: int, height: int, channels: int, brightness: int) -> np.ndarray:
-    image = np.zeros([height, width, channels], dtype=np.uint8)
+def create_image_with_gradient(width: int, height: int, brightness: int) -> np.ndarray:
+    image = np.zeros([height, width, 3], dtype=np.uint8)
     for x in range(width):
         for y in range(height):
             blue = int(brightness * (x / width))
