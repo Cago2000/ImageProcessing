@@ -6,24 +6,19 @@ img = basic_ops.load_image(image_path=img_path)
 
 img = geo_ops.resize_image(image=img, target_width=600, target_height=400)
 basic_ops.show_image(image=img, title='resized image')
-basic_ops.save_image(image=img, save_path="images/resized.ppm")
 
 degree = 45
 rotated_img = geo_ops.rotate_image(image=img, degree=degree)
 basic_ops.show_image(image=rotated_img, title=f"rotated image {degree} degree clockwise")
-basic_ops.save_image(image=rotated_img, save_path=f"images/{degree}_degree.ppm")
 
 degree = 59
 rotated_img = geo_ops.rotate_image(image=img, degree=degree)
 basic_ops.show_image(image=rotated_img, title=f"rotated image {degree} degree clockwise")
-basic_ops.save_image(image=rotated_img, save_path=f"images/{degree}_degree.ppm")
 
 degree = 147
 rotated_img = geo_ops.rotate_image(image=img, degree=degree)
 basic_ops.show_image(image=rotated_img, title=f"rotated image {degree} degree clockwise")
-basic_ops.save_image(image=rotated_img, save_path=f"images/{degree}_degree.ppm")
 
 degree = 360
 rotated_img = geo_ops.rotate_image(image=img, degree=degree)
 basic_ops.show_image(image=rotated_img, title=f"rotated image {degree} degree clockwise")
-basic_ops.save_image(image=rotated_img, save_path=f"images/{degree}_degree.ppm")
