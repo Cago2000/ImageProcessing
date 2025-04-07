@@ -2,6 +2,67 @@ import cv2
 import os
 import numpy as np
 
+def create_ppm_image(width: int, height: int, name: str, file_format: str):
+    magic_number = None
+    pixel_data = ''
+
+    dimensions = f'{width} {height}\n'
+    max_color = '255\n'
+    pixels = [
+        (255, 0, 0),
+        (0, 255, 0),
+        (0, 0, 255),
+        (255, 255, 0),
+        (255, 255, 255),
+        (0, 0, 0),
+    ]
+
+    if file_format == 'ascii':
+        magic_number = 'P3\n'
+        for r, g, b in pixels:
+            pixel_data += f'{r} {g} {b} '
+
+    if file_format == 'binary':
+        magic_number = b'P6\n'
+        dimensions = f'{width} {height}\n'.encode()
+        max_color = '255\n'.encode()
+        pixel_data = bytearray()
+        for pixel in pixels:
+            pixel_data.extend(pixel)
+
+    ppm_data = magic_number + dimensions + max_color + pixel_data
+    file_path = f"images/{name}.ppm"
+    mode = 'w' if file_format == 'ascii' else 'wb'
+    with open(file_path, mode) as f:
+        f.write(ppm_data)
+
+
+def load_ppm_image(image_path: str) -> np.ndarray:
+    with open(image_path, 'rb') as f:
+        magic_number = f.readline().strip()
+        if magic_number != b'P6':
+            raise ValueError('Unsupported PPM format (only P6 is supported)')
+
+        dimensions = f.readline()
+        while dimensions.startswith(b'#'):
+            dimensions = f.readline()
+        width, height = map(int, dimensions.strip().split())
+
+        max_color = f.readline()
+        while max_color.startswith(b'#'):
+            max_color = f.readline()
+        max_color = int(max_color.strip())
+        if max_color != 255:
+            raise ValueError('Only max color value of 255 is supported')
+
+        pixel_data = f.readline()
+        rgb_tuples = [tuple(pixel_data[i:i + 3]) for i in range(0, len(pixel_data), 3)]
+        rows = [rgb_tuples[i:i + width] for i in range(0, len(rgb_tuples), width)]
+        print(rows)
+        image = np.array(rows, dtype=np.uint8)
+        image = image[..., ::-1] # RGB to BGR
+        return image
+
 def create_image(width: int, height: int, channels: int, gray_value: int) -> np.ndarray:
     image = np.zeros([height, width, channels], dtype=np.uint8)
     image[:] = gray_value
