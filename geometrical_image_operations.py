@@ -5,13 +5,13 @@ def resize_image(image: np.ndarray, target_width: int, target_height: int) -> np
     height, width = image.shape[:2]
     x_min, x_max = 0, width - 1
     y_min, y_max = 0, height - 1
-    reduced_image = np.zeros((target_height, target_width) + image.shape[2:], dtype=image.dtype)
+    resized_image = np.zeros((target_height, target_width) + image.shape[2:], dtype=image.dtype)
     for m in range(target_width):
         for n in range(target_height):
             x = x_min + (m / (target_width - 1)) * (x_max - x_min)
             y = y_min + (n / (target_height - 1)) * (y_max - y_min)
-            reduced_image[n, m] = image[int(y), int(x)]
-    return reduced_image
+            resized_image[n, m] = image[int(y), int(x)]
+    return resized_image
 
 
 def rotate_image(image: np.ndarray, degree: int = 90) -> np.ndarray:
