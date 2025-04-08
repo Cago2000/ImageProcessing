@@ -10,8 +10,5 @@ def co_occurrence(image: np.ndarray, relation_function: Callable[[np.ndarray, in
     counter = 0
     for y in range(height):
         for x in range(width):
-            out_of_bounds = x < 0 or y < 0 or x >= width or y >= height
-            if out_of_bounds:
-                continue
             counter += relation_function(image, y, x)
     return counter
