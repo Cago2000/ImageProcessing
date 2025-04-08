@@ -8,6 +8,7 @@ def create_ppm_image(width: int, height: int, name: str, file_format: str):
 
     dimensions = f'{width} {height}\n'
     max_color = '255\n'
+    width, height = 3, 2
     pixels = [
         (255, 0, 0),
         (0, 255, 0),
