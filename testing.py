@@ -1,24 +1,24 @@
 import numpy as np
 import basic_image_operations as basic_ops
+import filters
+import geometrical_image_operations as geo_ops
 import statistical_operations as stat_ops
+import matplotlib.pyplot as plt
 
-test_img = np.array([[0, 0, 1, 1, 2, 3, 4],
-                     [0, 0, 0, 1, 2, 3, 5],
-                     [0, 0, 1, 2, 3, 3, 4],
-                     [0, 1, 1, 3, 3, 3, 4],
-                     [1, 2, 2, 3, 3, 3, 3],
-                     [2, 2, 3, 3, 3, 3, 2],
-                     [2, 2, 4, 4, 5, 6, 3]])
 
-counter = stat_ops.co_occurrence(test_img, (lambda image, x, y: image[y, x] == image[y, x + 1] if x + 1 < image.shape[1] else False))
-print(counter)
-
-median_value = stat_ops.median(test_img)
-print(median_value)
+bgr_img = basic_ops.load_image('images/resized.ppm')
+bgr_img = geo_ops.resize_image(bgr_img, 20, 20)
 
 img = basic_ops.load_image('images/resized.ppm')
-mean_value = stat_ops.mean(img)
-print(mean_value)
+img = filters.gray_scale_filter(img)
 
-mean_value = stat_ops.mean(test_img)
-print(mean_value)
+print(bgr_img.shape)
+print(img.shape)
+
+image_histogram = stat_ops.histogram(img)
+plt.plot(image_histogram)
+plt.show()
+
+image_histogram = stat_ops.histogram(bgr_img)
+plt.plot(image_histogram)
+plt.show()
