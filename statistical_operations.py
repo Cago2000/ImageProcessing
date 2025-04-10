@@ -48,3 +48,17 @@ def histogram(image: np.ndarray) -> np.ndarray | None:
     for pixel in flattened_image:
         image_histogram[pixel] += 1
     return image_histogram
+
+def cumulative_histogram(image: np.ndarray) -> np.ndarray | None:
+    if len(image.shape) == 3:
+        return None
+    image_histogram = histogram(image)
+    max_value = np.iinfo(image.dtype).max
+    image_cumulative_histogram = np.zeros((max_value + 1), dtype=np.float64)
+    cumulative_sum = 0.0
+    total_pixels = np.sum(image_histogram)
+    for gray_value in range(len(image_histogram)):
+        probability_of_gray_value = image_histogram[gray_value] / total_pixels
+        cumulative_sum += probability_of_gray_value
+        image_cumulative_histogram[gray_value] = cumulative_sum
+    return image_cumulative_histogram
