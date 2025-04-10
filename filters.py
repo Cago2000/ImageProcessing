@@ -2,7 +2,7 @@ import numpy as np
 
 def gray_scale_filter(image: np.ndarray) -> np.ndarray:
     if len(image.shape) == 2:
-        return imagea
+        return image
     height, width, _ = image.shape
     gray_scaled_image = np.zeros((height, width), dtype=np.uint8)
     for y in range(height):
