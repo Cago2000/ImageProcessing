@@ -21,3 +21,7 @@ plt.show()
 iso_two_histogram = stat_ops.histogram(isodensity_filter_degree_two_img)
 plt.plot(iso_two_histogram)
 plt.show()
+
+cumulative_histogram = stat_ops.cumulative_histogram(img)
+plt.plot(cumulative_histogram)
+plt.show()
