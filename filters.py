@@ -1,12 +1,14 @@
 import numpy as np
 
 def gray_scale_filter(image: np.ndarray) -> np.ndarray:
-    if image is not None:
-        image = np.array(
-            [list(map(lambda bgr: int(0.299 * bgr[2] + 0.587 * bgr[1] + 0.114 * bgr[0]), row)) for row in image])
-        return np.uint8(image)
-    else:
-        return image
+    if len(image.shape) == 2:
+        return imagea
+    height, width, _ = image.shape
+    gray_scaled_image = np.zeros((height, width), dtype=np.uint8)
+    for y in range(height):
+        for x in range(width):
+            gray_scaled_image[y][x] = int(0.299 * image[y][x][2] + 0.587 * image[y][x][1] + 0.114 * image[y][x][0])
+    return gray_scaled_image
 
 def black_white_filter(image: np.ndarray, threshold: int) -> np.ndarray:
     avg_intensity = np.mean(image, axis=-1)
