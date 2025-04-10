@@ -1,4 +1,5 @@
 import numpy as np
+import statistical_operations as stat_ops
 
 def gray_scale_filter(image: np.ndarray) -> np.ndarray:
     if len(image.shape) == 2:
@@ -58,4 +59,37 @@ def sobel_filter(image: np.ndarray, mode: str, intensity: int = 1) -> np.ndarray
         for x in range(out_width):
             window = padded_image[y:y + k_height, x:x + k_width]
             output[y, x] = np.abs(np.sum(window * sobel))
+    return output
+
+def linear_gray_scaling(image: np.ndarray, c1: float, c2: float) -> np.ndarray:
+    if len(image.shape) == 3:
+        return image
+    height, width = image.shape
+    for y in range(height):
+        for x in range(width):
+            new_gray_value = c2*image[y, x] + c1*c2
+            if new_gray_value > np.iinfo(image.dtype).max:
+                new_gray_value = np.iinfo(image.dtype).max
+            image[y, x] = new_gray_value
+    return image
+
+def isodensity_filter(image: np.ndarray, degree: int) -> np.ndarray:
+    if len(image.shape) == 3:
+        return image
+    mean_value = stat_ops.mean(image)
+    std = stat_ops.std(image)
+    height, width = image.shape
+    output = np.zeros((height, width), dtype=np.uint8)
+    for y in range(height):
+        for x in range(width):
+            match degree:
+                case 1:
+                    if image[y, x] < mean_value-std:
+                        output[y, x] = 0
+                    if image[y, x] > mean_value+std:
+                        output[y, x] = 255
+                    if mean_value-std <= image[y, x] <= mean_value+std:
+                        output[y, x] = mean_value
+                case 2:
+                    output[y, x] = 0 if image[y, x] < mean_value else 255
     return output
