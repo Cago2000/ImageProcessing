@@ -24,10 +24,11 @@ def mean(image: np.ndarray) -> np.float64:
 def variance(image: np.ndarray) -> np.float64:
     mean_value = mean(image)
     flattened_image = image.flatten()
-    return np.sum((flattened_image**2 - mean_value**2)) / len(flattened_image)
+    return np.sum((flattened_image - mean_value)**2) / len(flattened_image)
 
 def std(image: np.ndarray) -> np.float64:
-    return np.float64(math.sqrt(variance(image)))
+    variance_value = variance(image)
+    return np.float64(math.sqrt(variance_value))
 
 def entropy(image: np.ndarray) -> np.float64:
     image_histogram = histogram(image)
@@ -42,8 +43,8 @@ def histogram(image: np.ndarray) -> np.ndarray | None:
     if len(image.shape) == 3:
         return None
     flattened_image = image.flatten()
-    max_value = np.max(flattened_image)
-    image_histogram = np.zeros((max_value + 1), dtype=np.uint16)
+    max_value = np.iinfo(image.dtype).max
+    image_histogram = np.zeros((max_value+1), dtype=np.uint32)
     for pixel in flattened_image:
         image_histogram[pixel] += 1
     return image_histogram
