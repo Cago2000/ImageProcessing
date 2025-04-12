@@ -5,23 +5,16 @@ import filters
 import geometrical_image_operations as geo_ops
 import statistical_operations as stat_ops
 
-bgr_img = basic_ops.load_image('images/resized.ppm')
-bgr_img = geo_ops.resize_image(bgr_img, 20, 20)
 
-img = basic_ops.load_image('images/resized.ppm')
+img = basic_ops.load_image('images/obama.pgm')
 img = filters.gray_scale_filter(img)
 
-isodensity_filter_degree_one_img = filters.isodensity_filter(img, 1)
-isodensity_filter_degree_two_img = filters.isodensity_filter(img, 2)
+print(f'Median: {stat_ops.median(img)}')
 
-iso_one_histogram = stat_ops.histogram(isodensity_filter_degree_one_img)
-plt.plot(iso_one_histogram)
-plt.show()
+print(f'Mittelwert: {stat_ops.mean(img)}')
 
-iso_two_histogram = stat_ops.histogram(isodensity_filter_degree_two_img)
-plt.plot(iso_two_histogram)
-plt.show()
+print(f'Varianz: {stat_ops.variance(img)}')
 
-cumulative_histogram = stat_ops.cumulative_histogram(img)
-plt.plot(cumulative_histogram)
-plt.show()
+print(f'Standard-Abweichung: {stat_ops.std(img)}')
+
+print(f'Entropie: {stat_ops.entropy(img)}')
