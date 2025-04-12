@@ -15,7 +15,8 @@ def co_occurrence(image: np.ndarray, relation_function: Callable[[np.ndarray, in
     return counter
 
 def median(image: np.ndarray) -> np.ndarray:
-    return image[image.shape[0] // 2][image.shape[1] // 2]
+    flattened_image = image.flatten()
+    return flattened_image[len(flattened_image) // 2]
 
 def mean(image: np.ndarray) -> np.float64:
     flattened_image = image.flatten()
@@ -24,7 +25,7 @@ def mean(image: np.ndarray) -> np.float64:
 def variance(image: np.ndarray) -> np.float64:
     mean_value = mean(image)
     flattened_image = image.flatten()
-    return np.sum((flattened_image - mean_value)**2) / len(flattened_image)
+    return np.float64(np.sum((flattened_image - mean_value)**2) / len(flattened_image))
 
 def std(image: np.ndarray) -> np.float64:
     variance_value = variance(image)
