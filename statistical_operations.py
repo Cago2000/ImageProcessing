@@ -86,11 +86,19 @@ def histogram_equalization(image: np.ndarray) -> np.ndarray | None:
         equalized_flattened_image[i] = lookup_table[flattened_image[i]]
 
     equalized_image = equalized_flattened_image.reshape(image.shape)
-    equalized_image_cumulative_hist = cumulative_histogram(equalized_image)
-
-    plt.plot(cumulative_hist)
-    plt.show()
-    plt.plot(equalized_image_cumulative_hist)
-    plt.show()
     return equalized_image
 
+def gamma_equalization(image: np.ndarray, gamma: float) -> np.ndarray | None:
+
+    max_value = np.iinfo(image.dtype).max
+    gray_values = np.linspace(0, max_value, max_value+1)
+    lookup_table = np.floor(((gray_values / 255.0)** gamma) * 255).astype(np.uint16)
+
+    flattened_image = image.flatten()
+    gamma_equalized_flattened_image = np.zeros_like(flattened_image, dtype=np.uint8)
+
+    for i in range(flattened_image.size):
+        gamma_equalized_flattened_image[i] = lookup_table[flattened_image[i]]
+
+    gamma_equalized_image = gamma_equalized_flattened_image.reshape(image.shape)
+    return gamma_equalized_image
