@@ -5,6 +5,22 @@ from typing import Callable
 from matplotlib import pyplot as plt
 
 
+def gauss_filter(image: np.ndarray, dim: int) -> np.ndarray | None:
+    if len(image.shape) == 3 or dim % 2 == 0:
+        return None
+
+    dim = dim // 2
+    height, width = image.shape
+    for y in range(height):
+        for x in range(width):
+            pixels = np.array([], dtype=np.uint16)
+            for a in range(-dim, dim):
+                for b in range(-dim, dim):
+                    if 0 <= y+a < image.shape[0] and 0 <= x+b < image.shape[1]:
+                        pixels = np.append(pixels, image[y+a, x+b])
+            image[y, x] = np.uint8(np.sum(pixels) // pixels.size)
+    return image
+
 def co_occurrence(image: np.ndarray, relation_function: Callable[[np.ndarray, int, int], bool]) -> int:
     if len(image.shape) == 3:
         height, width, _ = image.shape
