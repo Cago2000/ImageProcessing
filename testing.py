@@ -6,15 +6,10 @@ import geometrical_image_operations as geo_ops
 import statistical_operations as stat_ops
 
 
-img = basic_ops.load_image('images/obama.pgm')
-img = filters.gray_scale_filter(img)
+img = basic_ops.load_image(image_path='images/obama.pgm')
+img = filters.gray_scale_filter(image=img)
+basic_ops.show_image(image=img)
 
-print(f'Median: {stat_ops.median(img)}')
-
-print(f'Mittelwert: {stat_ops.mean(img)}')
-
-print(f'Varianz: {stat_ops.variance(img)}')
-
-print(f'Standard-Abweichung: {stat_ops.std(img)}')
-
-print(f'Entropie: {stat_ops.entropy(img)}')
+img = stat_ops.histogram_equalization(image=img)
+basic_ops.show_image(image=img)
+basic_ops.save_image(image=img, save_path=f"images/histogram_equalized.pgm")
