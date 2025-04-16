@@ -16,8 +16,10 @@ def gauss_filter(image: np.ndarray, dim: int) -> np.ndarray | None:
             pixels = np.array([], dtype=np.uint16)
             for a in range(-dim, dim):
                 for b in range(-dim, dim):
-                    if 0 <= y+a < image.shape[0] and 0 <= x+b < image.shape[1]:
-                        pixels = np.append(pixels, image[y+a, x+b])
+                    out_of_bounds = y+a < 0 or y+a >= image.shape[0] or x+b < 0 or x+b >= image.shape[1]
+                    if out_of_bounds:
+                        continue
+                    pixels = np.append(pixels, image[y+a, x+b])
             image[y, x] = np.uint8(np.sum(pixels) // pixels.size)
     return image
 

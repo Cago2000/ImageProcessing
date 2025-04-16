@@ -39,7 +39,7 @@ def blur_filter(image: np.ndarray, kernel_dim: int, kernel_intensity: int) -> np
 
 import numpy as np
 
-def sobel_filter(image: np.ndarray, mode: str, intensity: int = 1) -> np.ndarray:
+def sobel_filter(image: np.ndarray, mode: str, intensity: int = 1) -> np.ndarray | None:
     if len(image.shape) == 3:
         return image
 
@@ -73,7 +73,7 @@ def sobel_filter(image: np.ndarray, mode: str, intensity: int = 1) -> np.ndarray
                 gy = np.sum(cur_window * sobel_y)
                 return np.uint8(np.sqrt(gx ** 2 + gy ** 2))
         case _:
-            return image
+            return None
 
     for y in range(out_height):
         for x in range(out_width):
@@ -82,9 +82,9 @@ def sobel_filter(image: np.ndarray, mode: str, intensity: int = 1) -> np.ndarray
     return output.astype(np.uint8)
 
 
-def linear_gray_scaling(image: np.ndarray, c1: float, c2: float) -> np.ndarray:
+def linear_gray_scaling(image: np.ndarray, c1: float, c2: float) -> np.ndarray | None:
     if len(image.shape) == 3:
-        return image
+        return None
     height, width = image.shape
     for y in range(height):
         for x in range(width):
@@ -94,9 +94,9 @@ def linear_gray_scaling(image: np.ndarray, c1: float, c2: float) -> np.ndarray:
             image[y, x] = new_gray_value
     return image
 
-def isodensity_filter(image: np.ndarray, degree: int) -> np.ndarray:
+def isodensity_filter(image: np.ndarray, degree: int) -> np.ndarray | None:
     if len(image.shape) == 3:
-        return image
+        return None
     mean_value = stat_ops.mean(image)
     std = stat_ops.std(image)
     height, width = image.shape
