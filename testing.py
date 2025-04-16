@@ -6,10 +6,8 @@ import geometrical_image_operations as geo_ops
 import statistical_operations as stat_ops
 
 
-img = basic_ops.load_image(image_path='images/obama.pgm')
-img = filters.gray_scale_filter(image=img)
+img = basic_ops.load_image(image_path='images/square.pgm')
 basic_ops.show_image(image=img)
 
-
-img = stat_ops.gauss_filter(image=img, dim=7)
+img = filters.sobel_filter(img, 'both')
 basic_ops.show_image(image=img)
