@@ -86,6 +86,8 @@ def load_image(image_path: str) -> np.ndarray | None:
             print("Error: Unable to load image.")
             return None
         print(f"Image loaded from {image_path}")
+        if len(img.shape) == 3 and image_path.split('.')[-1] == 'pgm':
+            img = img[:,:, 0]
         return np.uint8(img)
     else:
         print("Error: File not found.")
