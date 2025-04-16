@@ -37,29 +37,50 @@ def blur_filter(image: np.ndarray, kernel_dim: int, kernel_intensity: int) -> np
                 output[y, x, z] = np.sum(window * normalized_kernel)
     return output
 
+import numpy as np
+
 def sobel_filter(image: np.ndarray, mode: str, intensity: int = 1) -> np.ndarray:
-    match mode:
-        case 'vertical': sobel = np.array([
-            [-1, 0, 1],
-            [-2, 0, 2],
-            [-1, 0, 1]])
-        case 'horizontal': sobel = np.array([
-            [-1, -2, -1],
-            [ 0,  0,  0],
-            [ 1,  2,  1]])
-        case _: return image
-    sobel *= intensity
-    padded_image = np.pad(image,((1, 1), (1, 1)),mode='constant')
-    height, width = padded_image.shape
-    k_height, k_width = sobel.shape
-    out_height = height - k_height + 1
-    out_width = width - k_width + 1
+    if len(image.shape) == 3:
+        return image
+
+    sobel_x = np.array([
+        [-1, 0, 1],
+        [-2, 0, 2],
+        [-1, 0, 1]]) * intensity
+
+    sobel_y = np.array([
+        [-1, -2, -1],
+        [ 0,  0,  0],
+        [ 1,  2,  1]]) * intensity
+
+    # Pad the image
+    padded_image = np.pad(image, ((1, 1), (1, 1)), mode='constant')
+    out_height, out_width = image.shape[:]
     output = np.zeros((out_height, out_width), dtype=np.uint8)
+
+    match mode:
+        case 'vertical':
+            def apply_window(cur_window: np.ndarray) -> np.uint8:
+                return abs(np.sum(cur_window * sobel_x))
+
+        case 'horizontal':
+            def apply_window(cur_window: np.ndarray) -> np.uint8:
+                return abs(np.sum(cur_window * sobel_y))
+
+        case 'both':
+            def apply_window(cur_window: np.ndarray) -> np.uint8:
+                gx = np.sum(cur_window * sobel_x)
+                gy = np.sum(cur_window * sobel_y)
+                return np.uint8(np.sqrt(gx ** 2 + gy ** 2))
+        case _:
+            return image
+
     for y in range(out_height):
         for x in range(out_width):
-            window = padded_image[y:y + k_height, x:x + k_width]
-            output[y, x] = np.abs(np.sum(window * sobel))
-    return output
+            window = padded_image[y:y + 3, x:x + 3]
+            output[y, x] = apply_window(window)
+    return output.astype(np.uint8)
+
 
 def linear_gray_scaling(image: np.ndarray, c1: float, c2: float) -> np.ndarray:
     if len(image.shape) == 3:
