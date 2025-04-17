@@ -6,8 +6,8 @@ import geometrical_image_operations as geo_ops
 import statistical_operations as stat_ops
 
 
-img = basic_ops.load_image(image_path='images/square.pgm')
+img = basic_ops.load_image(image_path='images/obama.pgm')
 basic_ops.show_image(image=img)
 
-img = filters.sobel_filter(img, 'both')
+img = filters.laplace_filter(image=img, intensity=4)
 basic_ops.show_image(image=img)
