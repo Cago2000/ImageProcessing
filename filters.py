@@ -79,6 +79,9 @@ def sobel_filter(image: np.ndarray, mode: str, intensity: int = 1, threshold: in
         for x in range(out_width):
             window = padded_image[y:y + 3, x:x + 3]
             val = apply_window(window)
+            if threshold == 0:
+                output[y, x] = val
+                continue
             if val >= threshold:
                 output[y, x] = np.uint8(255)
             if val < threshold:
@@ -95,12 +98,15 @@ def laplace_filter(image: np.ndarray, intensity: int = 4, threshold: int = 127) 
                        [0,  -1, 0]])
     height, width = image.shape
     output = np.zeros_like(image, dtype=np.uint8)
-    padded_image = np.pad(image, pad_width=1, mode='constant', constant_values=0)
+    padded_image = np.pad(image, ((1, 1), (1, 1)), mode='constant')
     for y in range(height):
         for x in range(width):
             window = padded_image[y:y+3, x:x+3]
             pixelsum = np.sum(window * kernel)
             pixelsum = np.clip(pixelsum, 0, 255)
+            if threshold == 0:
+                output[y, x] = np.uint8(pixelsum)
+                continue
             if pixelsum >= threshold:
                 output[y, x] = np.uint8(255)
             if pixelsum < threshold:
@@ -139,4 +145,28 @@ def isodensity_filter(image: np.ndarray, degree: int) -> np.ndarray | None:
                         output[y, x] = mean_value
                 case 2:
                     output[y, x] = 0 if image[y, x] < mean_value else 255
+    return output
+
+def erosion(image: np.ndarray, dim: int) -> np.ndarray:
+    if len(image.shape) == 3:
+        return image
+    height, width = image.shape
+    output = np.zeros_like(image, dtype=np.uint8)
+    for y in range(height):
+        for x in range(width):
+            window = image[y:y+dim, x:x+dim]
+            val = np.min(window)
+            output[y, x] = val
+    return output
+
+def dilation(image: np.ndarray, dim: int) -> np.ndarray:
+    if len(image.shape) == 3:
+        return image
+    height, width = image.shape
+    output = np.zeros_like(image, dtype=np.uint8)
+    for y in range(height):
+        for x in range(width):
+            window = image[y:y+dim, x:x+dim]
+            val = np.max(window)
+            output[y, x] = val
     return output
