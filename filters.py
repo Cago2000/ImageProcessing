@@ -82,6 +82,25 @@ def sobel_filter(image: np.ndarray, mode: str, intensity: int = 1) -> np.ndarray
     return output.astype(np.uint8)
 
 
+def laplace_filter(image: np.ndarray, intensity: int = 4) -> np.ndarray:
+    if len(image.shape) == 3:
+        return image
+
+    kernel = np.array([[0,  -1, 0],
+                       [-1, intensity, -1],
+                       [0,  -1, 0]])
+    height, width = image.shape
+    output = np.zeros_like(image, dtype=np.uint8)
+    padded_image = np.pad(image, pad_width=1, mode='constant', constant_values=0)
+    for y in range(height):
+        for x in range(width):
+            window = padded_image[y:y+3, x:x+3]
+            pixelsum = np.sum(window * kernel)
+            pixelsum = np.clip(pixelsum, 0, 255)
+            output[y, x] = np.uint8(pixelsum)
+    return output
+
+
 def linear_gray_scaling(image: np.ndarray, c1: float, c2: float) -> np.ndarray | None:
     if len(image.shape) == 3:
         return None
