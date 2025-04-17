@@ -39,7 +39,7 @@ def blur_filter(image: np.ndarray, kernel_dim: int, kernel_intensity: int) -> np
 
 import numpy as np
 
-def sobel_filter(image: np.ndarray, mode: str, intensity: int = 1) -> np.ndarray | None:
+def sobel_filter(image: np.ndarray, mode: str, intensity: int = 1, threshold: int = 127) -> np.ndarray | None:
     if len(image.shape) == 3:
         return image
 
@@ -78,11 +78,15 @@ def sobel_filter(image: np.ndarray, mode: str, intensity: int = 1) -> np.ndarray
     for y in range(out_height):
         for x in range(out_width):
             window = padded_image[y:y + 3, x:x + 3]
-            output[y, x] = apply_window(window)
+            val = apply_window(window)
+            if val >= threshold:
+                output[y, x] = np.uint8(255)
+            if val < threshold:
+                output[y, x] = np.uint8(0)
     return output.astype(np.uint8)
 
 
-def laplace_filter(image: np.ndarray, intensity: int = 4) -> np.ndarray:
+def laplace_filter(image: np.ndarray, intensity: int = 4, threshold: int = 127) -> np.ndarray:
     if len(image.shape) == 3:
         return image
 
@@ -97,7 +101,10 @@ def laplace_filter(image: np.ndarray, intensity: int = 4) -> np.ndarray:
             window = padded_image[y:y+3, x:x+3]
             pixelsum = np.sum(window * kernel)
             pixelsum = np.clip(pixelsum, 0, 255)
-            output[y, x] = np.uint8(pixelsum)
+            if pixelsum >= threshold:
+                output[y, x] = np.uint8(255)
+            if pixelsum < threshold:
+                output[y, x] = np.uint8(0)
     return output
 
 
