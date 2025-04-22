@@ -93,6 +93,18 @@ def load_image(image_path: str) -> np.ndarray | None:
         print("Error: File not found.")
         return None
 
+def load_images(folder_path: str, amount: int) -> list[np.ndarray]:
+    images = []
+    for filename in os.listdir(folder_path):
+        if filename.lower().endswith(('.jpg', '.jpeg', '.png', '.ppm', '.pgm')):
+            img_path = os.path.join(folder_path, filename)
+            img = load_image(img_path)
+            if img is not None:
+                images.append(img)
+            if len(images) >= amount:
+                return images
+    return images
+
 def save_image(image: np.ndarray, save_path: str) -> None:
     try:
         cv2.imwrite(save_path, image)
