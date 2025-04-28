@@ -11,37 +11,47 @@ def gray_scale_filter(image: np.ndarray) -> np.ndarray:
             gray_scaled_image[y][x] = int(0.299 * image[y][x][2] + 0.587 * image[y][x][1] + 0.114 * image[y][x][0])
     return gray_scaled_image
 
-def black_white_filter(image: np.ndarray, threshold: int) -> np.ndarray:
-    avg_intensity = np.mean(image, axis=-1)
-    output = np.where(avg_intensity >= threshold, 255, 0).astype(np.uint8)
+def black_white_filter(image: np.ndarray, threshold: int) -> np.ndarray | None:
+    if len(image.shape) == 3:
+        return None
+    output = np.where(image >= threshold, 255, 0).astype(np.uint8)
     return output
 
+
 def blur_filter(image: np.ndarray, kernel_dim: int, kernel_intensity: int) -> np.ndarray:
-    kernel = np.ones((kernel_dim, kernel_dim, 3)) / kernel_intensity
+    if len(image.shape) == 3:
+        height, width, channels = image.shape
+    else:
+        height, width = image.shape
+        channels = 1
+        image = np.expand_dims(image, axis=-1)
+
+    kernel = np.ones((kernel_dim, kernel_dim, channels)) / kernel_intensity
     pad_size = kernel.shape[0] // 2
-    image = np.pad(
-        image,
-        ((pad_size, pad_size), (pad_size, pad_size), (0, 0)),
-        mode='constant'
-    )
-    height, width, channels = image.shape
+    image = np.pad(image, ((pad_size, pad_size), (pad_size, pad_size), (0, 0)), mode='constant')
+
     k_height, k_width, k_channels = kernel.shape
     out_height = height - k_height + 1
     out_width = width - k_width + 1
     output = np.zeros((out_height, out_width, channels), dtype=np.uint8)
+
     for z in range(channels):
         normalized_kernel = kernel[:, :, z] / np.sum(kernel[:, :, z])
         for y in range(out_height):
             for x in range(out_width):
                 window = image[y:y + k_height, x:x + k_width, z]
                 output[y, x, z] = np.sum(window * normalized_kernel)
+
+    if output.shape[2] == 1:
+        output = output[:, :, 0]
+
     return output
 
-import numpy as np
+
 
 def sobel_filter(image: np.ndarray, mode: str, intensity: int = 1, threshold: int = 127) -> np.ndarray | None:
     if len(image.shape) == 3:
-        return image
+        return None
 
     sobel_x = np.array([
         [-1, 0, 1],
