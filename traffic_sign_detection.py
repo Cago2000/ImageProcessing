@@ -12,7 +12,7 @@ def match_template(image, template, threshold=0.8):
 
     return boxes
 
-def rgb_to_hsv(rgb: np.ndarray) -> np.ndarray:
+def bgr_to_hsv(rgb: np.ndarray) -> np.ndarray:
     r, g, b = rgb[2], rgb[1], rgb[0]
     r, g, b = r / 255, g / 255, b / 255
     max_c = max(r, g, b)
@@ -92,7 +92,7 @@ def get_red_mask(image):
     mask = np.zeros((image.shape[0], image.shape[1]), dtype=np.uint8)
     for y in range(image.shape[0]):
         for x in range(image.shape[1]):
-            hsv = rgb_to_hsv(image[y, x])
+            hsv = bgr_to_hsv(image[y, x])
             h, s, v = hsv[2], hsv[1], hsv[0]
             if is_strong_red(h, s, v):
                 mask[y, x] = 1
