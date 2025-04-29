@@ -159,24 +159,35 @@ def isodensity_filter(image: np.ndarray, degree: int) -> np.ndarray | None:
 
 def erosion(image: np.ndarray, dim: int) -> np.ndarray:
     if len(image.shape) == 3:
-        return image
+        output = np.zeros_like(image, dtype=np.uint8)
+        for c in range(3):
+            output[:, :, c] = erosion(image[:, :, c], dim)
+        return output
+
     height, width = image.shape
     output = np.zeros_like(image, dtype=np.uint8)
+    pad = dim // 2
+    padded = np.pad(image, pad, mode='edge')
     for y in range(height):
         for x in range(width):
-            window = image[y:y+dim, x:x+dim]
-            val = np.min(window)
-            output[y, x] = val
+            window = padded[y:y+dim, x:x+dim]
+            output[y, x] = np.min(window)
     return output
+
 
 def dilation(image: np.ndarray, dim: int) -> np.ndarray:
     if len(image.shape) == 3:
-        return image
+        output = np.zeros_like(image, dtype=np.uint8)
+        for c in range(3):
+            output[:, :, c] = dilation(image[:, :, c], dim)
+        return output
+
     height, width = image.shape
     output = np.zeros_like(image, dtype=np.uint8)
+    pad = dim // 2
+    padded = np.pad(image, pad, mode='edge')
     for y in range(height):
         for x in range(width):
-            window = image[y:y+dim, x:x+dim]
-            val = np.max(window)
-            output[y, x] = val
+            window = padded[y:y+dim, x:x+dim]
+            output[y, x] = np.max(window)
     return output
