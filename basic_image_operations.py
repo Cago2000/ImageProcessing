@@ -93,7 +93,7 @@ def load_image(image_path: str) -> np.ndarray | None:
         print("Error: File not found.")
         return None
 
-def load_images(folder_path: str, amount: int) -> list[np.ndarray]:
+def load_images(folder_path: str, amount: int = 100) -> list[np.ndarray]:
     images = []
     for filename in os.listdir(folder_path):
         if filename.lower().endswith(('.jpg', '.jpeg', '.png', '.ppm', '.pgm')):
