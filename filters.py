@@ -71,17 +71,17 @@ def sobel_filter(image: np.ndarray, mode: str, intensity: int = 1, threshold: in
     match mode:
         case 'vertical':
             def apply_window(cur_window: np.ndarray) -> np.uint8:
-                return abs(np.sum(cur_window * sobel_x))
+                return np.uint8(np.clip(abs(np.sum(cur_window * sobel_x)), 0, 255))
 
         case 'horizontal':
             def apply_window(cur_window: np.ndarray) -> np.uint8:
-                return abs(np.sum(cur_window * sobel_y))
+                return np.uint8(np.clip(abs(np.sum(cur_window * sobel_y)), 0, 255))
 
         case 'both':
             def apply_window(cur_window: np.ndarray) -> np.uint8:
                 gx = np.sum(cur_window * sobel_x)
                 gy = np.sum(cur_window * sobel_y)
-                return np.uint8(np.sqrt(gx ** 2 + gy ** 2))
+                return np.uint8(np.clip(np.sqrt(gx ** 2 + gy ** 2), 0, 255))
         case _:
             return None
 
@@ -108,7 +108,7 @@ def laplace_filter(image: np.ndarray, intensity: int = 4, threshold: int = 127) 
                        [0,  -1, 0]])
     height, width = image.shape
     output = np.zeros_like(image, dtype=np.uint8)
-    padded_image = np.pad(image, ((1, 1), (1, 1)), mode='constant')
+    padded_image = np.pad(image, ((1, 1), (1, 1)), mode='edge')
     for y in range(height):
         for x in range(width):
             window = padded_image[y:y+3, x:x+3]
@@ -190,4 +190,22 @@ def dilation(image: np.ndarray, dim: int) -> np.ndarray:
         for x in range(width):
             window = padded[y:y+dim, x:x+dim]
             output[y, x] = np.max(window)
+    return output
+
+
+def median_filter(image: np.ndarray, dim: int) -> np.ndarray:
+    if len(image.shape) == 3:
+        output = np.zeros_like(image, dtype=np.uint8)
+        for c in range(3):
+            output[:, :, c] = median_filter(image[:, :, c], dim)
+        return output
+
+    height, width = image.shape
+    output = np.zeros_like(image, dtype=np.uint8)
+    pad = dim // 2
+    padded = np.pad(image, pad, mode='edge')
+    for y in range(height):
+        for x in range(width):
+            window = padded[y:y+dim, x:x+dim]
+            output[y, x] = np.median(window)
     return output
