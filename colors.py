@@ -52,7 +52,7 @@ def get_str_from_color(color: list[int]) -> str:
 
 def get_mask(image: np.ndarray, color_function: Callable):
     height, width = image.shape[:2]
-    mask = np.zeros((height, width), dtype=np.bool)
+    mask = np.zeros((height, width), dtype=bool)
     for y in range(height):
         for x in range(width):
             hsv = bgr_to_hsv(image[y, x])
