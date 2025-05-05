@@ -29,7 +29,7 @@ def get_color_from_function(color_function: Callable) -> list[int]:
         case func if func is is_strong_green:
             return [0, 255, 0]
         case func if func is is_strong_yellow:
-            return [0, 255, 255]  # Yellow in BGR
+            return [0, 255, 255]
         case func if func is is_strong_blue:
             return [255, 0, 0]
         case _:
@@ -44,7 +44,7 @@ def get_str_from_color(color: list[int]) -> str:
             return 'g'
         case[255, 0, 0]:
             return 'b'
-        case [255, 255, 0]:
+        case [0, 255, 255]:
             return 'y'
         case _:
             return 'default'
