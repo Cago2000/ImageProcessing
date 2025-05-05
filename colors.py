@@ -22,6 +22,34 @@ def bgr_to_hsv(rgb: np.ndarray) -> np.ndarray:
     v = max_c
     return np.array([h, s, v])
 
+def get_color_from_function(color_function: Callable) -> list[int]:
+    match color_function:
+        case func if func is is_strong_red:
+            return [0, 0, 255]
+        case func if func is is_strong_green:
+            return [0, 255, 0]
+        case func if func is is_strong_yellow:
+            return [0, 255, 255]  # Yellow in BGR
+        case func if func is is_strong_blue:
+            return [255, 0, 0]
+        case _:
+            return [0, 0, 0]
+
+
+def get_str_from_color(color: list[int]) -> str:
+    match color:
+        case [0, 0, 255]:
+            return 'r'
+        case [0, 255, 0]:
+            return 'g'
+        case[255, 0, 0]:
+            return 'b'
+        case [255, 255, 0]:
+            return 'y'
+        case _:
+            return 'default'
+
+
 def get_mask(image: np.ndarray, color_function: Callable):
     height, width = image.shape[:2]
     mask = np.zeros((height, width), dtype=np.bool)
