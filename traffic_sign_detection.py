@@ -3,6 +3,8 @@ from typing import Callable
 import cv2
 import numpy as np
 
+import colors
+
 
 def match_template(image, template, threshold=0.8):
     result = cv2.matchTemplate(image, template, cv2.TM_CCOEFF_NORMED)
@@ -43,9 +45,9 @@ def get_blobs(mask: np.ndarray) -> list:
                 label += 1
     return blobs
 
-def draw_bounding_boxes(image:np.ndarray, blobs: list, min_box_area: int) -> tuple:
+def draw_bounding_boxes(image: np.ndarray, blobs: list, min_box_area: int, box_color: list[int]) -> tuple:
     result = image.copy()
-    center_positions = []
+    blob_centers = []
     for blob in blobs:
         ys, xs = zip(*blob)
         top, left = min(ys), min(xs)
@@ -58,14 +60,14 @@ def draw_bounding_boxes(image:np.ndarray, blobs: list, min_box_area: int) -> tup
         if area < min_box_area:
             continue
 
-        result[top, left:right+1] = [0, 255, 0]     # Red
-        result[bottom, left:right+1] = [0, 255, 0]  # Red
+        result[top, left:right+1] = box_color
+        result[bottom, left:right+1] = box_color
 
-        result[top:bottom+1, left] = [0, 255, 0]
-        result[top:bottom+1, right] = [0, 255, 0]
-        center_position = ((top + bottom) // 2), ((right + left) // 2), area
-        center_positions.append(center_position)
-    return result, center_positions
+        result[top:bottom+1, left] = box_color
+        result[top:bottom+1, right] = box_color
+        blob_center = ((top + bottom) // 2), ((right + left) // 2), area, colors.get_str_from_color(box_color)
+        blob_centers.append(blob_center)
+    return result, blob_centers
 
 '''
 (178, 178) 11 189 189 11
