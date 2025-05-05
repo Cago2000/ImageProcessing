@@ -1,3 +1,5 @@
+from typing import Callable
+
 import cv2
 import numpy as np
 
@@ -12,34 +14,9 @@ def match_template(image, template, threshold=0.8):
 
     return boxes
 
-def bgr_to_hsv(rgb: np.ndarray) -> np.ndarray:
-    r, g, b = rgb[2], rgb[1], rgb[0]
-    r, g, b = r / 255, g / 255, b / 255
-    max_c = max(r, g, b)
-    min_c = min(r, g, b)
-    delta = max_c - min_c
 
-    if delta == 0:
-        h = 0
-    else:
-        match max_c:
-            case x if x == r:
-                h = 60 * (((g - b) / delta) % 6)
-            case x if x == g:
-                h = 60 * (((b - r) / delta) + 2)
-            case x if x == b:
-                h = 60 * (((r - g) / delta) + 4)
-    s = 0 if max_c == 0 else delta / max_c
-    v = max_c
-    return np.array([h, s, v])
 
-def is_strong_red(h: int, s: np.float64, v: np.float64) -> bool:
-    is_hue_red = h >= 345 or h <= 15
-    is_saturated = s >= 0.5
-    is_bright_enough = v >= 0.2
-    return is_hue_red and is_saturated and is_bright_enough
-
-def label_connected_components(mask):
+def get_blobs(mask: np.ndarray) -> list:
     label = 1
     labels = np.zeros_like(mask, dtype=np.int32)
     height, width = mask.shape
@@ -66,8 +43,9 @@ def label_connected_components(mask):
                 label += 1
     return blobs
 
-def draw_bounding_boxes(image, blobs, min_box_area=50):
+def draw_bounding_boxes(image:np.ndarray, blobs: list, min_box_area: int) -> tuple:
     result = image.copy()
+    center_positions = []
     for blob in blobs:
         ys, xs = zip(*blob)
         top, left = min(ys), min(xs)
@@ -85,16 +63,14 @@ def draw_bounding_boxes(image, blobs, min_box_area=50):
 
         result[top:bottom+1, left] = [0, 255, 0]
         result[top:bottom+1, right] = [0, 255, 0]
-    return result
+        center_position = ((top + bottom) // 2), ((right + left) // 2), area
+        center_positions.append(center_position)
+    return result, center_positions
 
+'''
+(178, 178) 11 189 189 11
+(50, 13) 75 125 123 110
+(22, 12) 75 97 166 154
+'''
 
-def get_red_mask(image):
-    mask = np.zeros((image.shape[0], image.shape[1]), dtype=np.uint8)
-    for y in range(image.shape[0]):
-        for x in range(image.shape[1]):
-            hsv = bgr_to_hsv(image[y, x])
-            h, s, v = hsv[2], hsv[1], hsv[0]
-            if is_strong_red(h, s, v):
-                mask[y, x] = 1
-    return mask
 
