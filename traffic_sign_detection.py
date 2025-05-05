@@ -1,8 +1,6 @@
-from typing import Callable
-
 import cv2
 import numpy as np
-
+import bounding_box
 import colors
 
 
@@ -47,7 +45,7 @@ def get_blobs(mask: np.ndarray) -> list:
 
 def draw_bounding_boxes(image: np.ndarray, blobs: list, min_box_area: int, box_color: list[int]) -> tuple:
     result = image.copy()
-    blob_centers = []
+    bounding_boxes = []
     for blob in blobs:
         ys, xs = zip(*blob)
         top, left = min(ys), min(xs)
@@ -65,9 +63,10 @@ def draw_bounding_boxes(image: np.ndarray, blobs: list, min_box_area: int, box_c
 
         result[top:bottom+1, left] = box_color
         result[top:bottom+1, right] = box_color
-        blob_center = ((top + bottom) // 2), ((right + left) // 2), area, colors.get_str_from_color(box_color)
-        blob_centers.append(blob_center)
-    return result, blob_centers
+
+        bounding_box_obj = bounding_box.BoundingBox(((top + bottom) // 2), ((right + left) // 2), height, width, area, colors.get_str_from_color(box_color))
+        bounding_boxes.append(bounding_box_obj)
+    return result, bounding_boxes
 
 '''
 (178, 178) 11 189 189 11
