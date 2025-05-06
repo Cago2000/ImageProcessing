@@ -49,7 +49,7 @@ def blur_filter(image: np.ndarray, kernel_dim: int, kernel_intensity: int) -> np
 
 
 
-def sobel_filter(image: np.ndarray, mode: str, intensity: int = 1, threshold: int = 127) -> np.ndarray | None:
+def sobel_filter(image: np.ndarray, mode: str, intensity: int = 1) -> np.ndarray | None:
     if len(image.shape) == 3:
         return None
 
@@ -89,13 +89,7 @@ def sobel_filter(image: np.ndarray, mode: str, intensity: int = 1, threshold: in
         for x in range(out_width):
             window = padded_image[y:y + 3, x:x + 3]
             val = apply_window(window)
-            if threshold == 0:
-                output[y, x] = val
-                continue
-            if val >= threshold:
-                output[y, x] = np.uint8(255)
-            if val < threshold:
-                output[y, x] = np.uint8(0)
+            output[y, x] = val
     return output.astype(np.uint8)
 
 
