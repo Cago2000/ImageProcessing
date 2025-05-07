@@ -36,20 +36,6 @@ def get_color_from_function(color_function: Callable) -> list[int]:
             return [0, 0, 0]
 
 
-def get_str_from_color(color: list[int]) -> str:
-    match color:
-        case [0, 0, 255]:
-            return 'r'
-        case [0, 255, 0]:
-            return 'g'
-        case[255, 0, 0]:
-            return 'b'
-        case [0, 255, 255]:
-            return 'y'
-        case _:
-            return 'default'
-
-
 def get_mask(image: np.ndarray, color_function: Callable):
     height, width = image.shape[:2]
     mask = np.zeros((height, width), dtype=bool)
@@ -62,9 +48,9 @@ def get_mask(image: np.ndarray, color_function: Callable):
     return mask
 
 def is_strong_red(h: int, s: np.float64, v: np.float64) -> bool:
-    is_hue_red = h >= 345 or h <= 15
-    is_saturated = s >= 0.5
-    is_bright_enough = v >= 0.3
+    is_hue_red = h >= 340 or h <= 20
+    is_saturated = s >= 0.3
+    is_bright_enough = v >= 0.1
     return is_hue_red and is_saturated and is_bright_enough
 
 def is_strong_green(h: int, s: np.float64, v: np.float64) -> bool:
@@ -74,7 +60,7 @@ def is_strong_green(h: int, s: np.float64, v: np.float64) -> bool:
     return is_hue_green and is_saturated and is_bright_enough
 
 def is_strong_blue(h: int, s: np.float64, v: np.float64) -> bool:
-    is_hue_blue = 225 <= h <= 255
+    is_hue_blue = 190 <= h <= 240
     is_saturated = s >= 0.3
     is_bright_enough = v >= 0.1
     return is_hue_blue and is_saturated and is_bright_enough
