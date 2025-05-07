@@ -1,4 +1,6 @@
 import numpy as np
+import colors
+
 class BoundingBox:
     def __init__(self, y: int, x: int, height: int, width: int, area: int, label: str):
         self.center_y = y
