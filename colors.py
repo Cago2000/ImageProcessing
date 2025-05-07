@@ -60,9 +60,9 @@ def is_strong_green(h: int, s: np.float64, v: np.float64) -> bool:
     return is_hue_green and is_saturated and is_bright_enough
 
 def is_strong_blue(h: int, s: np.float64, v: np.float64) -> bool:
-    is_hue_blue = 190 <= h <= 240
-    is_saturated = s >= 0.3
-    is_bright_enough = v >= 0.1
+    is_hue_blue = 200 <= h <= 240
+    is_saturated = s >= 0.4
+    is_bright_enough = v >= 0.2
     return is_hue_blue and is_saturated and is_bright_enough
 
 
