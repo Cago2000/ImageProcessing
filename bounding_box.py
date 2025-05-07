@@ -16,18 +16,22 @@ class BoundingBox:
                 f"height={self.box_height}, width={self.box_width}, area={self.box_area}, box_color={self.box_color}, "
                 f"image_index={self.image_index})")
 
-def create_bounding_boxes(blobs: list, min_box_area: int, box_color: list[int], image_index: int) -> list[BoundingBox]:
+def create_bounding_boxes(blobs: list, min_box_area: int, max_box_area: int, box_color: list[int], image_index: int) -> list[BoundingBox]:
     bounding_boxes = []
     for blob in blobs:
-        ys, xs = zip(*blob)
-        top, left = min(ys), min(xs)
-        bottom, right = max(ys), max(xs)
+        y_vals, x_vals = zip(*blob)
+        top, left = min(y_vals), min(x_vals)
+        bottom, right = max(y_vals), max(x_vals)
 
         width = right - left + 1
         height = bottom - top + 1
         area = width * height
 
-        if area < min_box_area:
+        if min_box_area > area or area > max_box_area:
+            continue
+
+        aspect_ratio = max(width/height, height/width)
+        if aspect_ratio > 1.5:
             continue
 
         center_y = (top + bottom) // 2
