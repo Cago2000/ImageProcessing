@@ -63,8 +63,8 @@ def get_mask(image: np.ndarray, color_function: Callable):
 
 def is_strong_red(h: int, s: np.float64, v: np.float64) -> bool:
     is_hue_red = h >= 345 or h <= 15
-    is_saturated = s >= 0.3
-    is_bright_enough = v >= 0.1
+    is_saturated = s >= 0.5
+    is_bright_enough = v >= 0.3
     return is_hue_red and is_saturated and is_bright_enough
 
 def is_strong_green(h: int, s: np.float64, v: np.float64) -> bool:
@@ -81,9 +81,9 @@ def is_strong_blue(h: int, s: np.float64, v: np.float64) -> bool:
 
 
 def is_strong_yellow(h: int, s: np.float64, v: np.float64) -> bool:
-    is_hue_yellow = 40 <= h <= 70
-    is_saturated = s >= 0.3
-    is_bright_enough = v >= 0.1
+    is_hue_yellow = 35 <= h <= 65
+    is_saturated = s >= 0.5
+    is_bright_enough = v >= 0.3
     return is_hue_yellow and is_saturated and is_bright_enough
 
 
