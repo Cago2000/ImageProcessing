@@ -201,5 +201,5 @@ def median_filter(image: np.ndarray, dim: int) -> np.ndarray:
     for y in range(height):
         for x in range(width):
             window = padded[y:y+dim, x:x+dim]
-            output[y, x] = np.median(window)
+            output[y, x] = stat_ops.median(window)
     return output
