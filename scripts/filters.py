@@ -1,5 +1,6 @@
 import numpy as np
 from scripts import statistical_operations as stat_ops
+from scipy.fft import fft2, ifft2
 
 def gray_scale_filter(image: np.ndarray) -> np.ndarray:
     if len(image.shape) == 2:
@@ -63,7 +64,6 @@ def sobel_filter(image: np.ndarray, mode: str, intensity: int = 1) -> np.ndarray
         [ 0,  0,  0],
         [ 1,  2,  1]]) * intensity
 
-    # Pad the image
     padded_image = np.pad(image, ((1, 1), (1, 1)), mode='constant')
     out_height, out_width = image.shape[:]
     output = np.zeros((out_height, out_width), dtype=np.uint8)
@@ -202,4 +202,70 @@ def median_filter(image: np.ndarray, dim: int) -> np.ndarray:
         for x in range(width):
             window = padded[y:y+dim, x:x+dim]
             output[y, x] = stat_ops.median(window)
+    return output
+
+def sobel_filter_fft(image: np.ndarray, mode: str, intensity: int = 1) -> np.ndarray | None:
+    if len(image.shape) == 3:
+        return None
+
+    sobel_x = np.array([
+        [-1, 0, 1],
+        [-2, 0, 2],
+        [-1, 0, 1]]) * intensity
+
+    sobel_y = np.array([
+        [-1, -2, -1],
+        [ 0,  0,  0],
+        [ 1,  2,  1]]) * intensity
+
+    F_sobel_x = fft2(x=sobel_x, s=image.shape)
+    F_sobel_y = fft2(x=sobel_y, s=image.shape)
+
+    F_image = fft2(x=image.astype(np.float32))
+
+    match mode:
+        case 'vertical':
+            F_result = F_image * F_sobel_x
+        case 'horizontal':
+            F_result = F_image * F_sobel_y
+        case 'both':
+            F_result = F_image * (F_sobel_x + F_sobel_y)
+        case _:
+            return None
+
+    output = np.real(ifft2(F_result))
+    return np.clip(output, 0, 255).astype(np.uint8)
+
+
+
+from sortedcontainers import SortedList
+import numpy as np
+def median_filter_sorted(image: np.ndarray, dim: int) -> np.ndarray:
+    if len(image.shape) == 2:  # Grayscale image
+        height, width = image.shape
+        pad = dim // 2
+        output = np.zeros_like(image, dtype=np.uint8)
+        padded = np.pad(image, pad, mode='edge')
+
+        for y in range(height):
+            for x in range(width):
+                window = SortedList()
+
+                # Fill the window with the current neighborhood
+                for ky in range(max(0, y - pad), min(height, y + pad + 1)):
+                    for kx in range(max(0, x - pad), min(width, x + pad + 1)):
+                        window.add(padded[ky, kx])
+
+                # Ensure that the window is fully populated
+                if len(window) == dim * dim:
+                    # The median is always at the middle of the sorted window
+                    output[y, x] = window[len(window) // 2]
+
+        return output
+
+    # For color images (3 channels), process each channel separately
+    output = np.zeros_like(image, dtype=np.uint8)
+    for c in range(3):
+        output[:, :, c] = median_filter_sorted(image[:, :, c], dim)
+
     return output
