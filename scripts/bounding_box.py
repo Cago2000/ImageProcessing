@@ -36,7 +36,7 @@ def create_bounding_box(blob: np.ndarray, image_index: int, min_box_area: int, m
         return None
 
     aspect_ratio = max(width / height, height / width)
-    if aspect_ratio > 1.3:
+    if aspect_ratio > 1.75:
         return None
 
     center_y = (top + bottom) // 2
