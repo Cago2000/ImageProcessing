@@ -1,5 +1,6 @@
 # created by virtualenv automatically
 /.venv/*
 /.idea/
-/__pycache__/
+**/__pycache__/
+*.pyc
 /bva_images/
