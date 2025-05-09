@@ -1,7 +1,7 @@
 import numpy as np
 
 class BoundingBox:
-    def __init__(self, y: int, x: int, corners: list[int],height: int, width: int, area: int, box_color: list[int], image_index: int):
+    def __init__(self, y: int, x: int, corners: list[int], height: int, width: int, area: int, box_color: list[int], image_index: int):
         self.center_y = y
         self.center_x = x
         self.box_corners = corners
@@ -64,3 +64,21 @@ def draw_bounding_box(bounding_box: BoundingBox, image: np.ndarray) -> np.ndarra
     image[top:bottom+1, left] = box_color
     image[top:bottom+1, right] = box_color
     return image
+
+def merge_bounding_boxes(boxes1: list[BoundingBox], boxes2: list[BoundingBox], max_deviation: int) -> list[BoundingBox]:
+    new_boxes = []
+    for box1 in boxes1:
+        for box2 in boxes2:
+            if abs(box1.center_y-box2.center_y) >= max_deviation or abs(box1.center_x-box2.center_x) >= max_deviation: #similar enough
+                continue
+            new_box_corners = []
+            for box1_corner, box2_corner in zip(box1.box_corners, box2.box_corners):
+                new_box_corners.append((box1_corner+box2_corner)//2)
+            new_box_center_y, new_box_center_x = (box1.center_y+box2.center_y)//2, (box1.center_x+box2.center_x)//2
+            new_box_height, new_box_width = (box1.box_height+box2.box_height)//2, (box1.box_width+box2.box_width)//2
+            new_box_area = new_box_height*new_box_width
+            new_box_image_index = box1.image_index
+            new_bounding_box_obj = BoundingBox(new_box_center_y, new_box_center_x, new_box_corners, new_box_height, new_box_width, new_box_area, [255, 255, 255], new_box_image_index)
+            if new_bounding_box_obj is not None:
+                new_boxes.append(new_bounding_box_obj)
+    return new_boxes
