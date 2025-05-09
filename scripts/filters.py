@@ -1,5 +1,5 @@
 import numpy as np
-import statistical_operations as stat_ops
+from scripts import statistical_operations as stat_ops
 
 def gray_scale_filter(image: np.ndarray) -> np.ndarray:
     if len(image.shape) == 2:

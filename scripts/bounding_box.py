@@ -78,7 +78,7 @@ def merge_bounding_boxes(boxes1: list[BoundingBox], boxes2: list[BoundingBox], m
             new_box_height, new_box_width = (box1.box_height+box2.box_height)//2, (box1.box_width+box2.box_width)//2
             new_box_area = new_box_height*new_box_width
             new_box_image_index = box1.image_index
-            new_bounding_box_obj = BoundingBox(new_box_center_y, new_box_center_x, new_box_corners, new_box_height, new_box_width, new_box_area, [255, 255, 255], new_box_image_index)
+            new_bounding_box_obj = BoundingBox(new_box_center_y, new_box_center_x, new_box_corners, new_box_height, new_box_width, new_box_area, [0, 0, 255], new_box_image_index)
             if new_bounding_box_obj is not None:
                 new_boxes.append(new_bounding_box_obj)
     return new_boxes

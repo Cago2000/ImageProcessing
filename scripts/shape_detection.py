@@ -36,7 +36,7 @@ def trace_contour(binary_image: np.ndarray, visited: np.ndarray, y: int, x: int)
                 break
     return np.array(contour)
 
-def get_contours(binary_image: np.ndarray, angle_tolerance: int = 10) -> list:
+def get_contours(binary_image: np.ndarray, angle_tolerance: int = 10, deviation_threshold: float = 10.0) -> list:
     visited = np.zeros_like(binary_image, dtype=bool)
     contours = []
     height, width = binary_image.shape[:2]
@@ -47,6 +47,7 @@ def get_contours(binary_image: np.ndarray, angle_tolerance: int = 10) -> list:
                 contour = trace_contour(binary_image, visited, y, x)
                 #rect = min_area_rect(contour)
                 rect = cv2.minAreaRect(contour)
+
                 if rect is None:
                     continue
                 _, _, angle = rect
@@ -110,3 +111,28 @@ def get_rectangle_corners(center, width, height, angle):
     ])
     rotated = rotate_points(corners, angle)
     return rotated + center
+
+
+
+'''from numpy.linalg import lstsq
+def fit_line(contour):
+    points = contour.reshape(-1, 2)  # Reshape contour array
+    X = np.c_[points[:, 0], np.ones(points.shape[0])]  # Design matrix
+    y = points[:, 1]
+    slope, intercept = lstsq(X, y, rcond=None)[0]
+    return slope, intercept
+
+def deviation_from_line(contour, slope, intercept):
+    points = contour.reshape(-1, 2)
+    line_y = slope * points[:, 0] + intercept
+    deviations = np.abs(points[:, 1] - line_y)
+    return np.mean(deviations), np.std(deviations)
+
+def is_straight(contour, deviation_threshold):
+    if len(contour) < 5:
+        return False
+
+    slope, intercept = fit_line(contour)
+    mean_deviation, std_deviation = deviation_from_line(contour, slope, intercept)
+    print(mean_deviation)
+    return mean_deviation < deviation_threshold and std_deviation < deviation_threshold'''
