@@ -65,7 +65,7 @@ def draw_bounding_box(bounding_box: BoundingBox, image: np.ndarray) -> np.ndarra
     image[top:bottom+1, right] = box_color
     return image
 
-def merge_bounding_boxes(boxes1: list[BoundingBox], boxes2: list[BoundingBox], max_deviation: int) -> list[BoundingBox]:
+def fuse_bounding_box_matches(boxes1: list[BoundingBox], boxes2: list[BoundingBox], max_deviation: int) -> list[BoundingBox]:
     new_boxes = []
     for box1 in boxes1:
         for box2 in boxes2:
@@ -77,8 +77,56 @@ def merge_bounding_boxes(boxes1: list[BoundingBox], boxes2: list[BoundingBox], m
             new_box_center_y, new_box_center_x = (box1.center_y+box2.center_y)//2, (box1.center_x+box2.center_x)//2
             new_box_height, new_box_width = (box1.box_height+box2.box_height)//2, (box1.box_width+box2.box_width)//2
             new_box_area = new_box_height*new_box_width
+
+            new_box_color = [255, 255, 255]
+            if box1.box_color != [255, 255, 255]:
+                new_box_color = box1.box_color
+            if box2.box_color != [255, 255, 255]:
+                new_box_color = box2.box_color
+
             new_box_image_index = box1.image_index
-            new_bounding_box_obj = BoundingBox(new_box_center_y, new_box_center_x, new_box_corners, new_box_height, new_box_width, new_box_area, [0, 0, 255], new_box_image_index)
+            new_bounding_box_obj = BoundingBox(new_box_center_y, new_box_center_x, new_box_corners, new_box_height, new_box_width, new_box_area, new_box_color, new_box_image_index)
             if new_bounding_box_obj is not None:
                 new_boxes.append(new_bounding_box_obj)
     return new_boxes
+
+def merge_duplicate_boxes(boxes: list[BoundingBox], max_deviation: int) -> list[BoundingBox]:
+    merged_boxes = []
+    visited = set()
+    for box1 in boxes:
+        if box1 in visited:
+            continue
+        similar_boxes = [box1]
+        visited.add(box1)
+
+        for box2 in boxes:
+            if box2 in visited or box1 is box2:
+                continue
+            if (abs(box1.center_y - box2.center_y) <= max_deviation and
+                abs(box1.center_x - box2.center_x) <= max_deviation):
+                similar_boxes.append(box2)
+                visited.add(box2)
+
+        if similar_boxes:
+            avg_corners = []
+            for corners in zip(*(b.box_corners for b in similar_boxes)):
+                avg_corner = sum(corners) // len(similar_boxes)
+                avg_corners.append(avg_corner)
+
+            center_y = sum(b.center_y for b in similar_boxes) // len(similar_boxes)
+            center_x = sum(b.center_x for b in similar_boxes) // len(similar_boxes)
+            height = sum(b.box_height for b in similar_boxes) // len(similar_boxes)
+            width = sum(b.box_width for b in similar_boxes) // len(similar_boxes)
+            area = height * width
+            image_index = similar_boxes[0].image_index
+
+            box_color = [255, 255, 255]
+            for box in similar_boxes:
+                if box.box_color != [255, 255 ,255]:
+                    box_color = box.box_color
+                    break
+
+            merged_box = BoundingBox(center_y, center_x, avg_corners, height, width, area, box_color, image_index)
+            merged_boxes.append(merged_box)
+
+    return merged_boxes
