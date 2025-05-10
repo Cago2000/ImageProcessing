@@ -1,6 +1,6 @@
 import numpy as np
 from scripts import statistical_operations as stat_ops
-from scipy.fft import fft2, ifft2
+from numpy.fft import fft2, ifft2, ifftshift
 
 def gray_scale_filter(image: np.ndarray) -> np.ndarray:
     if len(image.shape) == 2:
@@ -204,37 +204,57 @@ def median_filter(image: np.ndarray, dim: int) -> np.ndarray:
             output[y, x] = stat_ops.median(window)
     return output
 
+
 def sobel_filter_fft(image: np.ndarray, mode: str, intensity: int = 1) -> np.ndarray | None:
-    if len(image.shape) == 3:
+    if image.ndim != 2:
         return None
+
+    height, width = image.shape
 
     sobel_x = np.array([
         [-1, 0, 1],
         [-2, 0, 2],
-        [-1, 0, 1]]) * intensity
+        [-1, 0, 1]
+    ]) * intensity
 
     sobel_y = np.array([
         [-1, -2, -1],
         [ 0,  0,  0],
-        [ 1,  2,  1]]) * intensity
+        [ 1,  2,  1]
+    ]) * intensity
 
-    F_sobel_x = fft2(x=sobel_x, s=image.shape)
-    F_sobel_y = fft2(x=sobel_y, s=image.shape)
+    def center_kernel(kernel: np.ndarray, shape: tuple[int, int]) -> np.ndarray:
+        padded = np.zeros(shape, dtype=np.float32)
+        kh, kw = kernel.shape
+        cy, cx = shape[0] // 2, shape[1] // 2
+        y0, x0 = cy - kh // 2, cx - kw // 2
+        padded[y0:y0+kh, x0:x0+kw] = kernel
+        return padded
 
-    F_image = fft2(x=image.astype(np.float32))
+    kernel_x_centered = center_kernel(sobel_x, (height, width))
+    kernel_y_centered = center_kernel(sobel_y, (height, width))
+
+    F_sobel_x = fft2(np.fft.ifftshift(kernel_x_centered))
+    F_sobel_y = fft2(np.fft.ifftshift(kernel_y_centered))
+    F_image = fft2(image.astype(np.float32))
 
     match mode:
         case 'vertical':
-            F_result = F_image * F_sobel_x
+            result = np.real(ifft2(F_image * F_sobel_x))
+
         case 'horizontal':
-            F_result = F_image * F_sobel_y
+            result = np.real(ifft2(F_image * F_sobel_y))
+
         case 'both':
-            F_result = F_image * (F_sobel_x + F_sobel_y)
+            gx = np.real(ifft2(F_image * F_sobel_x))
+            gy = np.real(ifft2(F_image * F_sobel_y))
+            result = np.sqrt(gx ** 2 + gy ** 2)
+
         case _:
             return None
 
-    output = np.real(ifft2(F_result))
-    return np.clip(output, 0, 255).astype(np.uint8)
+    return np.clip(result, 0, 255).astype(np.uint8)
+
 
 
 
