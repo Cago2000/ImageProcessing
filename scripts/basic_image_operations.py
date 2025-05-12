@@ -95,7 +95,7 @@ def load_image(image_path: str) -> np.ndarray | None:
 
 def load_images(folder_path: str, amount: int = 100) -> list[np.ndarray]:
     images = []
-    for filename in os.listdir(folder_path):
+    for filename in sorted(os.listdir(folder_path)):
         if filename.lower().endswith(('.jpg', '.jpeg', '.png', '.ppm', '.pgm')):
             img_path = os.path.join(folder_path, filename)
             img = load_image(img_path)
